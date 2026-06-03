@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CV Builder — ATS Ready</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1a2e;
+    --ink-mid: #3d3d5c;
+    --ink-light: #6b6b8a;
+    --gold: #c9a84c;
+    --gold-light: #f0e4c0;
+    --cream: #faf8f3;
+    --white: #ffffff;
+    --border: #e8e4d9;
+    --surface: #f4f1ea;
+    --accent: #1a1a2e;
+    --success: #2d6a4f;
+    --tag-bg: #eef2ff;
+    --tag-fg: #3730a3;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--ink);
+    color: var(--white);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 58px;
+    flex-shrink: 0;
+  }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .logo span { color: var(--gold); }
+  .header-actions { display: flex; gap: 10px; align-items: center; }
+  .btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 7px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    border: none;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.85);
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,0.1); color: #fff; }
+  .btn-gold {
+    background: var(--gold);
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .btn-gold:hover { background: #d4b05e; transform: translateY(-1px); }
+
+  /* ── LAYOUT ── */
+  .app-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    height: calc(100vh - 58px);
+  }
+
+  /* ── SIDEBAR (FORM) ── */
+  .sidebar {
+    width: 400px;
+    flex-shrink: 0;
+    background: var(--white);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .sidebar-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+    overflow-x: auto;
+  }
+  .sidebar-tabs::-webkit-scrollbar { height: 0; }
+  .tab-btn {
+    padding: 11px 16px;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink-light);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+    margin-bottom: -1px;
+  }
+  .tab-btn.active {
+    color: var(--ink);
+    border-bottom-color: var(--gold);
+    background: var(--white);
+  }
+  .tab-btn:hover:not(.active) { color: var(--ink-mid); background: rgba(0,0,0,0.03); }
+
+  .sidebar-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.25rem;
+  }
+  .sidebar-content::-webkit-scrollbar { width: 4px; }
+  .sidebar-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .section-panel { display: none; }
+  .section-panel.active { display: block; }
+
+  .field-group { margin-bottom: 1rem; }
+  .field-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-light);
+    margin-bottom: 5px;
+  }
+  input[type="text"], input[type="email"], input[type="url"],
+  textarea, select {
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px;
+    color: var(--ink);
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 11px;
+    transition: border-color 0.15s;
+    outline: none;
+    resize: vertical;
+  }
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--gold);
+    background: var(--white);
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.12);
+  }
+  textarea { min-height: 80px; line-height: 1.5; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  /* Dynamic items */
+  .item-card {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+    position: relative;
+  }
+  .item-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .item-title-preview {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-mid);
+  }
+  .btn-remove {
+    width: 24px; height: 24px;
+    background: transparent;
+    border: 1px solid #e0ddd8;
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--ink-light);
+    font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .btn-remove:hover { background: #fff0f0; border-color: #f9c2c2; color: #c0392b; }
+  .btn-add {
+    width: 100%;
+    padding: 8px;
+    background: transparent;
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-light);
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-top: 4px;
+  }
+  .btn-add:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-light); }
+
+  /* Skills */
+  .skills-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .skill-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--tag-bg);
+    color: var(--tag-fg);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+  .skill-tag button {
+    background: none; border: none; cursor: pointer;
+    color: var(--ink-light); font-size: 14px; line-height: 1;
+    padding: 0; transition: color 0.1s;
+  }
+  .skill-tag button:hover { color: #c0392b; }
+  .skill-input-row { display: flex; gap: 6px; }
+  .skill-input-row input { flex: 1; }
+  .btn-add-skill {
+    padding: 8px 14px;
+    background: var(--ink);
+    color: var(--white);
+    border: none;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s;
+  }
+  .btn-add-skill:hover { background: var(--gold); color: var(--ink); }
+
+  /* ATS hint */
+  .ats-tip {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 6px;
+    padding: 9px 12px;
+    font-size: 12px;
+    color: #166534;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+  .ats-tip strong { font-weight: 600; }
+
+  /* ── PREVIEW ── */
+  .preview-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2rem;
+    background: #ddd9d0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .preview-area::-webkit-scrollbar { width: 6px; }
+  .preview-area::-webkit-scrollbar-thumb { background: #bbb; border-radius: 4px; }
+
+  /* ── CV DOCUMENT ── */
+  #cv-doc {
+    width: 794px; /* A4 px at 96dpi */
+    min-height: 1123px;
+    background: var(--white);
+    box-shadow: 0 4px 40px rgba(0,0,0,0.18);
+    font-family: 'DM Sans', sans-serif;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Gold top bar */
+  .cv-top-bar {
+    height: 5px;
+    background: linear-gradient(90deg, var(--gold) 0%, #e8c96e 60%, var(--gold) 100%);
+  }
+
+  .cv-header {
+    padding: 36px 52px 28px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .cv-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 34px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    margin-bottom: 4px;
+  }
+  .cv-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--gold);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .cv-contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 18px;
+    font-size: 12.5px;
+    color: var(--ink-mid);
+  }
+  .cv-contact-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .cv-contact-item .dot {
+    width: 4px; height: 4px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  .cv-body {
+    padding: 28px 52px 40px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  /* Sections */
+  .cv-section { margin-bottom: 26px; }
+  .cv-section:last-child { margin-bottom: 0; }
+
+  .cv-section-title {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    padding-bottom: 7px;
+    border-bottom: 1.5px solid var(--border);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .cv-section-title::before {
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 2px;
+    background: var(--gold);
+    border-radius: 2px;
+  }
+
+  /* Summary */
+  .cv-summary {
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: var(--ink-mid);
+  }
+
+  /* Experience / Education entries */
+  .cv-entry { margin-bottom: 18px; }
+  .cv-entry:last-child { margin-bottom: 0; }
+  .cv-entry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2px;
+  }
+  .cv-entry-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+  .cv-entry-date {
+    font-size: 12px;
+    color: var(--ink-light);
+    font-weight: 400;
+    white-space: nowrap;
+    margin-left: 12px;
+    flex-shrink: 0;
+    font-family: 'DM Mono', monospace;
+  }
+  .cv-entry-subtitle {
+    font-size: 13px;
+    color: var(--gold);
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .cv-entry-location {
+    font-size: 12px;
+    color: var(--ink-light);
+  }
+  .cv-entry-desc {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--ink-mid);
+    margin-top: 6px;
+  }
+  .cv-entry-desc ul {
+    padding-left: 16px;
+    margin: 0;
+  }
+  .cv-entry-desc li {
+    margin-bottom: 3px;
+  }
+
+  /* Skills grid */
+  .cv-skills-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .cv-skill-pill {
+    font-size: 12.5px;
+    font-weight: 400;
+    color: var(--ink-mid);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+
+  /* Languages */
+  .cv-lang-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 8px;
+  }
+  .cv-lang-item { font-size: 13px; color: var(--ink-mid); }
+  .cv-lang-name { font-weight: 500; color: var(--ink); }
+
+  /* ── PRINT ── */
+  @media print {
+    body { background: white; }
+    .sidebar, header, .preview-area { display: none !important; }
+    #cv-doc {
+      width: 100%;
+      box-shadow: none;
+      min-height: unset;
+    }
+    @page { margin: 0; size: A4; }
+  }
+
+  /* empty state */
+  .placeholder-text {
+    color: var(--ink-light);
+    font-style: italic;
+    font-size: 13px;
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+<header>
+  <div class="logo">CV<span>.</span>Craft</div>
+  <div class="header-actions">
+    <button class="btn btn-ghost" onclick="resetForm()">↺ Reset</button>
+    <button class="btn btn-gold" onclick="printCV()">⬇ Download PDF</button>
+  </div>
+</header>
+
+<div class="app-body">
+
+  <!-- ── SIDEBAR FORM ── -->
+  <div class="sidebar">
+    <div class="sidebar-tabs">
+      <button class="tab-btn active" onclick="switchTab('basics')">Contact</button>
+      <button class="tab-btn" onclick="switchTab('summary')">Summary</button>
+      <button class="tab-btn" onclick="switchTab('experience')">Experience</button>
+      <button class="tab-btn" onclick="switchTab('education')">Education</button>
+      <button class="tab-btn" onclick="switchTab('skills')">Skills</button>
+      <button class="tab-btn" onclick="switchTab('projects')">Projects</button>
+      <button class="tab-btn" onclick="switchTab('languages')">Languages</button>
+    </div>
+
+    <div class="sidebar-content">
+
+      <!-- BASICS -->
+      <div class="section-panel active" id="panel-basics">
+        <div class="ats-tip"><strong>ATS tip:</strong> Use your real full name and keep contact info plain text — no logos or icons in the actual document.</div>
+        <div class="field-group">
+          <label class="field-label">Full Name</label>
+          <input type="text" id="f-name" placeholder="Alexandra Chen" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Professional Title</label>
+          <input type="text" id="f-title" placeholder="Senior Product Designer" oninput="render()">
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label">Email</label>
+            <input type="email" id="f-email" placeholder="alex@email.com" oninput="render()">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Phone</label>
+            <input type="text" id="f-phone" placeholder="+1 (555) 000-0000" oninput="render()">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label">City / Location</label>
+            <input type="text" id="f-location" placeholder="New York, NY" oninput="render()">
+          </div>
+          <div class="field-group">
+            <label class="field-label">LinkedIn</label>
+            <input type="text" id="f-linkedin" placeholder="linkedin.com/in/alex" oninput="render()">
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Website / Portfolio</label>
+          <input type="url" id="f-website" placeholder="alexchen.design" oninput="render()">
+        </div>
+      </div>
+
+      <!-- SUMMARY -->
+      <div class="section-panel" id="panel-summary">
+        <div class="ats-tip"><strong>ATS tip:</strong> Include keywords from the job description. Keep this 3–5 sentences and lead with your role title.</div>
+        <div class="field-group">
+          <label class="field-label">Professional Summary</label>
+          <textarea id="f-summary" rows="6" placeholder="Accomplished Product Designer with 8+ years of experience creating user-centered digital products. Proven track record of increasing user engagement by 40% through data-driven design decisions. Expertise in Figma, design systems, and cross-functional collaboration." oninput="render()"></textarea>
+        </div>
+      </div>
+
+      <!-- EXPERIENCE -->
+      <div class="section-panel" id="panel-experience">
+        <div class="ats-tip"><strong>ATS tip:</strong> Use bullet points starting with action verbs. Quantify achievements (%, $, numbers).</div>
+        <div id="exp-list"></div>
+        <button class="btn-add" onclick="addExp()">+ Add Experience</button>
+      </div>
+
+      <!-- EDUCATION -->
+      <div class="section-panel" id="panel-education">
+        <div class="ats-tip"><strong>ATS tip:</strong> List degree type, full institution name, and graduation year clearly.</div>
+        <div id="edu-list"></div>
+        <button class="btn-add" onclick="addEdu()">+ Add Education</button>
+      </div>
+
+      <!-- SKILLS -->
+      <div class="section-panel" id="panel-skills">
+        <div class="ats-tip"><strong>ATS tip:</strong> Include exact keywords from the job posting. Separate technical and soft skills if possible.</div>
+        <div class="field-group">
+          <label class="field-label">Technical Skills</label>
+          <div class="skills-tags" id="tech-tags"></div>
+          <div class="skill-input-row">
+            <input type="text" id="tech-skill-input" placeholder="e.g. Figma, React, SQL…" onkeydown="if(event.key==='Enter'){addSkill('tech');event.preventDefault()}">
+            <button class="btn-add-skill" onclick="addSkill('tech')">Add</button>
+          </div>
+        </div>
+        <div class="field-group" style="margin-top:1rem;">
+          <label class="field-label">Soft Skills</label>
+          <div class="skills-tags" id="soft-tags"></div>
+          <div class="skill-input-row">
+            <input type="text" id="soft-skill-input" placeholder="e.g. Leadership, Communication…" onkeydown="if(event.key==='Enter'){addSkill('soft');event.preventDefault()}">
+            <button class="btn-add-skill" onclick="addSkill('soft')">Add</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROJECTS -->
+      <div class="section-panel" id="panel-projects">
+        <div class="ats-tip"><strong>ATS tip:</strong> Showcase relevant side projects, open-source contributions, or freelance work.</div>
+        <div id="proj-list"></div>
+        <button class="btn-add" onclick="addProj()">+ Add Project</button>
+      </div>
+
+      <!-- LANGUAGES -->
+      <div class="section-panel" id="panel-languages">
+        <div id="lang-list"></div>
+        <button class="btn-add" onclick="addLang()">+ Add Language</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── PREVIEW AREA ── -->
+  <div class="preview-area">
+    <div id="cv-doc">
+      <div class="cv-top-bar"></div>
+      <div id="cv-inner"><!-- rendered by JS --></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── State ──
+const state = {
+  name: '', title: '', email: '', phone: '', location: '', linkedin: '', website: '',
+  summary: '',
+  experience: [],
+  education: [],
+  techSkills: [],
+  softSkills: [],
+  projects: [],
+  languages: [],
+};
+
+let expCounter = 0, eduCounter = 0, projCounter = 0, langCounter = 0;
+
+// ── Tabs ──
+function switchTab(tab) {
+  document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + tab).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ── Experience ──
+function addExp() {
+  const id = ++expCounter;
+  state.experience.push({ id, company: '', role: '', start: '', end: '', location: '', desc: '' });
+  renderExpList();
+  render();
+}
+function removeExp(id) {
+  state.experience = state.experience.filter(e => e.id !== id);
+  renderExpList();
+  render();
+}
+function renderExpList() {
+  const el = document.getElementById('exp-list');
+  el.innerHTML = state.experience.map(e => `
+    <div class="item-card">
+      <div class="item-card-header">
+        <span class="item-title-preview">${e.role || e.company || 'New Entry'}</span>
+        <button class="btn-remove" onclick="removeExp(${e.id})" title="Remove">✕</button>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Job Title</label>
+          <input type="text" value="${esc(e.role)}" placeholder="Senior Designer" oninput="updateExp(${e.id},'role',this.value)">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Company</label>
+          <input type="text" value="${esc(e.company)}" placeholder="Acme Corp" oninput="updateExp(${e.id},'company',this.value)">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Start</label>
+          <input type="text" value="${esc(e.start)}" placeholder="Jan 2021" oninput="updateExp(${e.id},'start',this.value)">
+        </div>
+        <div class="field-group">
+          <label class="field-label">End</label>
+          <input type="text" value="${esc(e.end)}" placeholder="Present" oninput="updateExp(${e.id},'end',this.value)">
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Location</label>
+        <input type="text" value="${esc(e.location)}" placeholder="New York, NY" oninput="updateExp(${e.id},'location',this.value)">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Responsibilities & Achievements</label>
+        <textarea placeholder="• Led redesign of mobile app, increasing retention by 32%&#10;• Managed team of 5 designers across 3 product areas" oninput="updateExp(${e.id},'desc',this.value)">${esc(e.desc)}</textarea>
+      </div>
+    </div>
+  `).join('');
+}
+function updateExp(id, field, val) {
+  const e = state.experience.find(x => x.id === id);
+  if (e) { e[field] = val; render(); }
+}
+
+// ── Education ──
+function addEdu() {
+  const id = ++eduCounter;
+  state.education.push({ id, degree: '', institution: '', start: '', end: '', gpa: '', location: '' });
+  renderEduList();
+  render();
+}
+function removeEdu(id) {
+  state.education = state.education.filter(e => e.id !== id);
+  renderEduList();
+  render();
+}
+function renderEduList() {
+  const el = document.getElementById('edu-list');
+  el.innerHTML = state.education.map(e => `
+    <div class="item-card">
+      <div class="item-card-header">
+        <span class="item-title-preview">${e.degree || e.institution || 'New Entry'}</span>
+        <button class="btn-remove" onclick="removeEdu(${e.id})" title="Remove">✕</button>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Degree / Certificate</label>
+        <input type="text" value="${esc(e.degree)}" placeholder="Bachelor of Science in Computer Science" oninput="updateEdu(${e.id},'degree',this.value)">
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Institution</label>
+          <input type="text" value="${esc(e.institution)}" placeholder="MIT" oninput="updateEdu(${e.id},'institution',this.value)">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Location</label>
+          <input type="text" value="${esc(e.location)}" placeholder="Cambridge, MA" oninput="updateEdu(${e.id},'location',this.value)">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Start Year</label>
+          <input type="text" value="${esc(e.start)}" placeholder="2016" oninput="updateEdu(${e.id},'start',this.value)">
+        </div>
+        <div class="field-group">
+          <label class="field-label">End Year</label>
+          <input type="text" value="${esc(e.end)}" placeholder="2020" oninput="updateEdu(${e.id},'end',this.value)">
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">GPA / Honours (optional)</label>
+        <input type="text" value="${esc(e.gpa)}" placeholder="3.9/4.0 · Magna Cum Laude" oninput="updateEdu(${e.id},'gpa',this.value)">
+      </div>
+    </div>
+  `).join('');
+}
+function updateEdu(id, field, val) {
+  const e = state.education.find(x => x.id === id);
+  if (e) { e[field] = val; render(); }
+}
+
+// ── Skills ──
+function addSkill(type) {
+  const inputId = type === 'tech' ? 'tech-skill-input' : 'soft-skill-input';
+  const val = document.getElementById(inputId).value.trim();
+  if (!val) return;
+  if (type === 'tech') state.techSkills.push(val);
+  else state.softSkills.push(val);
+  document.getElementById(inputId).value = '';
+  renderSkillTags();
+  render();
+}
+function removeSkill(type, idx) {
+  if (type === 'tech') state.techSkills.splice(idx, 1);
+  else state.softSkills.splice(idx, 1);
+  renderSkillTags();
+  render();
+}
+function renderSkillTags() {
+  document.getElementById('tech-tags').innerHTML = state.techSkills.map((s, i) =>
+    `<span class="skill-tag">${esc(s)}<button onclick="removeSkill('tech',${i})" title="Remove">×</button></span>`).join('');
+  document.getElementById('soft-tags').innerHTML = state.softSkills.map((s, i) =>
+    `<span class="skill-tag">${esc(s)}<button onclick="removeSkill('soft',${i})" title="Remove">×</button></span>`).join('');
+}
+
+// ── Projects ──
+function addProj() {
+  const id = ++projCounter;
+  state.projects.push({ id, name: '', role: '', date: '', url: '', desc: '' });
+  renderProjList();
+  render();
+}
+function removeProj(id) {
+  state.projects = state.projects.filter(p => p.id !== id);
+  renderProjList();
+  render();
+}
+function renderProjList() {
+  const el = document.getElementById('proj-list');
+  el.innerHTML = state.projects.map(p => `
+    <div class="item-card">
+      <div class="item-card-header">
+        <span class="item-title-preview">${p.name || 'New Project'}</span>
+        <button class="btn-remove" onclick="removeProj(${p.id})" title="Remove">✕</button>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Project Name</label>
+          <input type="text" value="${esc(p.name)}" placeholder="OpenSource CLI Tool" oninput="updateProj(${p.id},'name',this.value)">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Your Role</label>
+          <input type="text" value="${esc(p.role)}" placeholder="Lead Developer" oninput="updateProj(${p.id},'role',this.value)">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Date / Period</label>
+          <input type="text" value="${esc(p.date)}" placeholder="2024" oninput="updateProj(${p.id},'date',this.value)">
+        </div>
+        <div class="field-group">
+          <label class="field-label">URL (optional)</label>
+          <input type="text" value="${esc(p.url)}" placeholder="github.com/…" oninput="updateProj(${p.id},'url',this.value)">
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Description</label>
+        <textarea placeholder="What it is, what you built, impact." oninput="updateProj(${p.id},'desc',this.value)">${esc(p.desc)}</textarea>
+      </div>
+    </div>
+  `).join('');
+}
+function updateProj(id, field, val) {
+  const p = state.projects.find(x => x.id === id);
+  if (p) { p[field] = val; render(); }
+}
+
+// ── Languages ──
+function addLang() {
+  const id = ++langCounter;
+  state.languages.push({ id, lang: '', level: 'Professional' });
+  renderLangList();
+  render();
+}
+function removeLang(id) {
+  state.languages = state.languages.filter(l => l.id !== id);
+  renderLangList();
+  render();
+}
+function renderLangList() {
+  const el = document.getElementById('lang-list');
+  el.innerHTML = state.languages.map(l => `
+    <div class="item-card">
+      <div class="item-card-header">
+        <span class="item-title-preview">${l.lang || 'Language'}</span>
+        <button class="btn-remove" onclick="removeLang(${l.id})" title="Remove">✕</button>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Language</label>
+          <input type="text" value="${esc(l.lang)}" placeholder="English" oninput="updateLang(${l.id},'lang',this.value)">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Proficiency</label>
+          <select onchange="updateLang(${l.id},'level',this.value)">
+            ${['Native','Fluent','Professional','Intermediate','Basic'].map(v =>
+              `<option ${l.level===v?'selected':''}>${v}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+function updateLang(id, field, val) {
+  const l = state.languages.find(x => x.id === id);
+  if (l) { l[field] = val; render(); }
+}
+
+// ── Helpers ──
+function esc(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function txt(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function descToHtml(desc) {
+  const lines = desc.trim().split('\n').filter(l => l.trim());
+  if (!lines.length) return '';
+  const bullets = lines.map(l => l.trim().replace(/^[•\-\*]\s*/,''));
+  return `<ul>${bullets.map(b => `<li>${txt(b)}</li>`).join('')}</ul>`;
+}
+
+// ── Read form values ──
+function readForm() {
+  state.name = document.getElementById('f-name').value;
+  state.title = document.getElementById('f-title').value;
+  state.email = document.getElementById('f-email').value;
+  state.phone = document.getElementById('f-phone').value;
+  state.location = document.getElementById('f-location').value;
+  state.linkedin = document.getElementById('f-linkedin').value;
+  state.website = document.getElementById('f-website').value;
+  state.summary = document.getElementById('f-summary').value;
+}
+
+// ── Render CV ──
+function render() {
+  readForm();
+  const s = state;
+
+  // contact items
+  const contacts = [
+    s.email, s.phone, s.location, s.linkedin, s.website
+  ].filter(Boolean);
+
+  const contactHtml = contacts.map(c =>
+    `<span class="cv-contact-item"><span class="dot"></span>${txt(c)}</span>`
+  ).join('');
+
+  // summary
+  const summaryHtml = s.summary
+    ? `<div class="cv-section">
+        <div class="cv-section-title">Professional Summary</div>
+        <p class="cv-summary">${txt(s.summary)}</p>
+       </div>`
+    : '';
+
+  // experience
+  const expHtml = s.experience.length
+    ? `<div class="cv-section">
+        <div class="cv-section-title">Work Experience</div>
+        ${s.experience.map(e => `
+          <div class="cv-entry">
+            <div class="cv-entry-header">
+              <div class="cv-entry-title">${txt(e.role)}</div>
+              ${(e.start||e.end)?`<div class="cv-entry-date">${txt(e.start)}${e.start&&e.end?' – ':''}${txt(e.end)}</div>`:''}
+            </div>
+            ${e.company?`<div class="cv-entry-subtitle">${txt(e.company)}${e.location?' · <span class="cv-entry-location">'+txt(e.location)+'</span>':''}</div>`:''}
+            ${e.desc?`<div class="cv-entry-desc">${descToHtml(e.desc)}</div>`:''}
+          </div>
+        `).join('')}
+       </div>`
+    : '';
+
+  // education
+  const eduHtml = s.education.length
+    ? `<div class="cv-section">
+        <div class="cv-section-title">Education</div>
+        ${s.education.map(e => `
+          <div class="cv-entry">
+            <div class="cv-entry-header">
+              <div class="cv-entry-title">${txt(e.degree)}</div>
+              ${(e.start||e.end)?`<div class="cv-entry-date">${txt(e.start)}${e.start&&e.end?' – ':''}${txt(e.end)}</div>`:''}
+            </div>
+            ${e.institution?`<div class="cv-entry-subtitle">${txt(e.institution)}${e.location?' · <span class="cv-entry-location">'+txt(e.location)+'</span>':''}</div>`:''}
+            ${e.gpa?`<div class="cv-entry-desc" style="margin-top:3px;font-size:12.5px;">${txt(e.gpa)}</div>`:''}
+          </div>
+        `).join('')}
+       </div>`
+    : '';
+
+  // skills
+  const allSkills = [...s.techSkills, ...s.softSkills];
+  const skillsHtml = allSkills.length
+    ? `<div class="cv-section">
+        <div class="cv-section-title">Skills</div>
+        <div class="cv-skills-grid">
+          ${allSkills.map(sk => `<span class="cv-skill-pill">${txt(sk)}</span>`).join('')}
+        </div>
+       </div>`
+    : '';
+
+  // projects
+  const projHtml = s.projects.length
+    ? `<div class="cv-section">
+        <div class="cv-section-title">Projects</div>
+        ${s.projects.map(p => `
+          <div class="cv-entry">
+            <div class="cv-entry-header">
+              <div class="cv-entry-title">${txt(p.name)}</div>
+              ${p.date?`<div class="cv-entry-date">${txt(p.date)}</div>`:''}
+            </div>
+            ${(p.role||p.url)?`<div class="cv-entry-subtitle">${txt(p.role)}${p.role&&p.url?' · ':''}<span style="font-weight:400;font-size:12px;">${txt(p.url)}</span></div>`:''}
+            ${p.desc?`<div class="cv-entry-desc">${txt(p.desc)}</div>`:''}
+          </div>
+        `).join('')}
+       </div>`
+    : '';
+
+  // languages
+  const langHtml = s.languages.length
+    ? `<div class="cv-section">
+        <div class="cv-section-title">Languages</div>
+        <div class="cv-lang-row">
+          ${s.languages.map(l => `
+            <div class="cv-lang-item">
+              <span class="cv-lang-name">${txt(l.lang)}</span>
+              ${l.level?` <span style="color:var(--ink-light);font-size:12px;">· ${txt(l.level)}</span>`:''}
+            </div>
+          `).join('')}
+        </div>
+       </div>`
+    : '';
+
+  const nameDisplay = s.name || '<span style="color:#bbb;font-style:italic;">Your Name</span>';
+  const titleDisplay = s.title || '';
+
+  document.getElementById('cv-inner').innerHTML = `
+    <div class="cv-header">
+      <div class="cv-name">${s.name ? txt(s.name) : '<span style="color:#ccc;font-style:italic;">Your Name</span>'}</div>
+      ${titleDisplay ? `<div class="cv-title">${txt(titleDisplay)}</div>` : ''}
+      ${contactHtml ? `<div class="cv-contact">${contactHtml}</div>` : ''}
+    </div>
+    <div class="cv-body">
+      ${summaryHtml}
+      ${expHtml}
+      ${eduHtml}
+      ${skillsHtml}
+      ${projHtml}
+      ${langHtml}
+    </div>
+  `;
+}
+
+function printCV() {
+  const btn = document.querySelector('.btn-gold');
+  const original = btn.innerHTML;
+  btn.innerHTML = '⏳ Generating…';
+  btn.disabled = true;
+
+  const name = state.name || 'CV';
+  const element = document.getElementById('cv-doc');
+
+  const opt = {
+    margin: 0,
+    filename: name.replace(/\s+/g, '_') + '_CV.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, logging: false },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+
+  html2pdf().set(opt).from(element).save().then(() => {
+    btn.innerHTML = original;
+    btn.disabled = false;
+  }).catch(() => {
+    btn.innerHTML = original;
+    btn.disabled = false;
+    alert('PDF generation failed. Try File → Print → Save as PDF in your browser.');
+  });
+}
+
+function resetForm() {
+  if (!confirm('Reset all data?')) return;
+  location.reload();
+}
+
+// ── Init with sample data ──
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('f-name').value = 'Alexandra Chen';
+  document.getElementById('f-title').value = 'Senior Product Designer';
+  document.getElementById('f-email').value = 'alex.chen@email.com';
+  document.getElementById('f-phone').value = '+1 (415) 555-0182';
+  document.getElementById('f-location').value = 'San Francisco, CA';
+  document.getElementById('f-linkedin').value = 'linkedin.com/in/alexchen';
+  document.getElementById('f-website').value = 'alexchen.design';
+  document.getElementById('f-summary').value = 'Senior Product Designer with 8+ years of experience crafting user-centered digital products for SaaS and fintech companies. Proven track record of increasing user engagement by 40% and reducing churn through data-driven design strategy. Expert in Figma, design systems, and leading cross-functional product teams from concept to launch.';
+
+  // Sample experience
+  addExp();
+  const e1 = state.experience[0];
+  e1.role = 'Senior Product Designer'; e1.company = 'Stripe'; e1.start = 'Mar 2021'; e1.end = 'Present';
+  e1.location = 'San Francisco, CA';
+  e1.desc = '• Led end-to-end redesign of Stripe Dashboard, improving task completion rate by 38%\n• Established a design system used by 20+ product teams, reducing design debt by 60%\n• Mentored 4 junior designers and ran weekly design critiques across the organization';
+  renderExpList();
+
+  addExp();
+  const e2 = state.experience[1];
+  e2.role = 'Product Designer'; e2.company = 'Airbnb'; e2.start = 'Jan 2019'; e2.end = 'Feb 2021';
+  e2.location = 'San Francisco, CA';
+  e2.desc = '• Redesigned host onboarding flow, increasing host sign-ups by 25%\n• Collaborated with engineering and PM to ship 3 major product features per quarter\n• Conducted 50+ user interviews and synthesized insights into actionable design direction';
+  renderExpList();
+
+  addEdu();
+  const edu1 = state.education[0];
+  edu1.degree = 'Bachelor of Fine Arts, Interaction Design'; edu1.institution = 'California College of the Arts';
+  edu1.start = '2012'; edu1.end = '2016'; edu1.location = 'San Francisco, CA'; edu1.gpa = 'Graduated with Honors';
+  renderEduList();
+
+  state.techSkills = ['Figma', 'Sketch', 'Prototyping', 'Design Systems', 'User Research', 'HTML/CSS', 'SQL', 'Framer'];
+  state.softSkills = ['Team Leadership', 'Stakeholder Management', 'Strategic Thinking', 'Mentorship'];
+  renderSkillTags();
+
+  addLang();
+  state.languages[0].lang = 'English'; state.languages[0].level = 'Native';
+  addLang();
+  state.languages[1].lang = 'Mandarin'; state.languages[1].level = 'Professional';
+  renderLangList();
+
+  render();
+});
+</script>
+</body>
+</html>
